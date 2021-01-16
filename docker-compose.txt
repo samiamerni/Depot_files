@@ -1,0 +1,40 @@
+version: '3'
+services:
+    mongodb:
+        image: registry.gitlab.com/krimia/dockerkubernetes/mongo:officiel
+          #build:
+          #context: .
+          #dockerfile: Dockerfile-mongo
+        volumes:
+            - ./mongodb_data:/data/db
+        ports:
+            - "9001:27017"
+        command: [--auth]
+
+    web:
+        image: registry.gitlab.com/krimia/dockerkubernetes/nginx:officiel
+          #build:
+          #context: .
+          #dockerfile: Dockerfile-nginx
+        volumes:
+            - ./attrimob_shlmr:/app
+            - ./logs/nginx:/var/log/nginx:rw
+            - ./site-2.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - "80:80"
+        depends_on:
+            - php
+    php:
+        # build:
+        #context: ./
+        image: registry.gitlab.com/krimia/dockerkubernetes/php:officiel
+        volumes:
+            - ./attrimob_shlmr:/app #:rw
+        depends_on:
+            - mongodb
+
+volumes:
+    mongodb_data:
+    logs:
+    attrimob_shlmr:
+    site-2.conf:
